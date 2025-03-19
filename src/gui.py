@@ -109,9 +109,9 @@ class TextToSpeechGUI:
         # Update the GUI
         self.root.update()
 
-    def update_message(self, message, delay=0.5):
+    def update_message(self, message, delay=0.2, is_audio=False, audio_file=None):
         """Update a message with a delay and GUI update."""
-        self.add_message(message)
+        self.add_message(message, is_audio=is_audio, audio_file=audio_file)
         time.sleep(delay)
 
     def convert_text(self):
@@ -125,12 +125,11 @@ class TextToSpeechGUI:
         self.convert_button.state(['disabled'])
         
         try:
-            # Add the input text to the chat
-            self.update_message(f"Converting text: {text}")
+            # Add the input text to the chat (truncated to 10 characters)
+            truncated_text = text[:16] + "..." if len(text) > 16 else text
+            self.update_message(f"Converting text: {truncated_text}")
             
             # Add generating message
-            self.update_message("Initializing ElevenLabs API...")
-            time.sleep(0.3)
             self.update_message("Generating audio...")
             
             # Convert text to speech
@@ -139,8 +138,7 @@ class TextToSpeechGUI:
             # Add success message and audio file
             self.update_message("Audio generated successfully!", is_audio=True, audio_file=audio_file)
             
-            # Play the audio
-            self.update_message("Playing audio...")
+            # Play the audio (without showing message)
             play_audio(audio_file)
             
         except Exception as e:
