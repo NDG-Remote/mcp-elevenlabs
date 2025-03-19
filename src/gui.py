@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext
 import os
 from datetime import datetime
+import time
 from main import setup_elevenlabs, text_to_speech, play_audio
 
 class TextToSpeechGUI:
@@ -105,6 +106,13 @@ class TextToSpeechGUI:
         
         # Scroll to the bottom
         self.chat_display.see(tk.END)
+        # Update the GUI
+        self.root.update()
+
+    def update_message(self, message, delay=0.5):
+        """Update a message with a delay and GUI update."""
+        self.add_message(message)
+        time.sleep(delay)
 
     def convert_text(self):
         """Convert the input text to speech."""
@@ -118,18 +126,21 @@ class TextToSpeechGUI:
         
         try:
             # Add the input text to the chat
-            self.add_message(f"Converting text: {text}")
+            self.update_message(f"Converting text: {text}")
             
             # Add generating message
-            self.add_message("Generating audio...")
+            self.update_message("Initializing ElevenLabs API...")
+            time.sleep(0.3)
+            self.update_message("Generating audio...")
             
             # Convert text to speech
             audio_file = text_to_speech(self.client, text, self.voice_var.get())
             
             # Add success message and audio file
-            self.add_message("Audio generated successfully!", is_audio=True, audio_file=audio_file)
+            self.update_message("Audio generated successfully!", is_audio=True, audio_file=audio_file)
             
             # Play the audio
+            self.update_message("Playing audio...")
             play_audio(audio_file)
             
         except Exception as e:
